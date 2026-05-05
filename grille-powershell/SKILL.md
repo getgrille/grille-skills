@@ -29,7 +29,7 @@ grille:ps_run
 **Network connectivity check:**
 ```
 grille:ps_run
-  script="Test-NetConnection -ComputerName 100.95.128.36 -Port 5432"
+  script="Test-NetConnection -ComputerName <remote-host> -Port 5432"
 ```
 
 **File system test:**
@@ -68,7 +68,7 @@ grille:ps_run
 **Example 2: Check if a TCP port is reachable before a SQL connection**
 ```
 grille:ps_run
-  script="Test-NetConnection -ComputerName 100.95.128.36 -Port 5432 -InformationLevel Detailed"
+  script="Test-NetConnection -ComputerName <remote-host> -Port 5432 -InformationLevel Detailed"
 
 → TcpTestSucceeded: True = proceed with sql_query
 → TcpTestSucceeded: False = check Docker container status with docker_ps
