@@ -47,6 +47,64 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 
 ---
 
+## Tool Reference
+
+Every Grille tool exposes a human-readable title in the MCP manifest for display in Claude Desktop and other clients.
+
+| Tool | Title |
+|------|-------|
+| `fs_read_file` | Grille · Filesystem · Read File |
+| `fs_write_file` | Grille · Filesystem · Write File |
+| `fs_str_replace` | Grille · Filesystem · Surgical Edit |
+| `fs_append_file` | Grille · Filesystem · Append File |
+| `fs_list_directory` | Grille · Filesystem · List Directory |
+| `fs_find` | Grille · Filesystem · Find Files |
+| `fs_copy_file` | Grille · Filesystem · Copy File |
+| `fs_stat` | Grille · Filesystem · File Info |
+| `fs_diff` | Grille · Filesystem · Diff |
+| `fs_create_directory` | Grille · Filesystem · Create Directory |
+| `fs_delete_file` | Grille · Filesystem · Delete File |
+| `fs_delete_directory` | Grille · Filesystem · Delete Directory |
+| `process_run` | Grille · Process · Run Executable |
+| `ps_run` | Grille · PowerShell · Run Cmdlet |
+| `docker_ps` | Grille · Docker · List Containers |
+| `docker_logs` | Grille · Docker · Container Logs |
+| `docker_inspect` | Grille · Docker · Inspect Container |
+| `docker_images` | Grille · Docker · List Images |
+| `docker_stats` | Grille · Docker · Container Stats |
+| `docker_start` | Grille · Docker · Start Container |
+| `docker_stop` | Grille · Docker · Stop Container |
+| `docker_exec` | Grille · Docker · Exec in Container |
+| `docker_compose_ps` | Grille · Docker · Compose Status |
+| `docker_compose_up` | Grille · Docker · Compose Up |
+| `docker_compose_down` | Grille · Docker · Compose Down |
+| `docker_compose_restart` | Grille · Docker · Compose Restart |
+| `sql_query` | Grille · SQL · Query |
+| `sql_execute` | Grille · SQL · Execute |
+| `sql_begin` | Grille · SQL · Begin Transaction |
+| `sql_commit` | Grille · SQL · Commit |
+| `sql_rollback` | Grille · SQL · Rollback |
+| `sql_list_tables` | Grille · SQL · List Tables |
+| `sql_describe` | Grille · SQL · Describe Table |
+| `service_list` | Grille · Services · List |
+| `service_get` | Grille · Services · Get Status |
+| `service_start` | Grille · Services · Start |
+| `service_stop` | Grille · Services · Stop |
+| `service_restart` | Grille · Services · Restart |
+| `ssh_run` | Grille · Remote · SSH Run |
+| `remote_copy` | Grille · Remote · Copy File |
+| `registry_list_key` | Grille · Registry · List Key |
+| `registry_read_value` | Grille · Registry · Read Value |
+| `registry_set_value` | Grille · Registry · Set Value |
+| `registry_delete_value` | Grille · Registry · Delete Value |
+| `eventlog_query` | Grille · Event Log · Query |
+| `grille_info` | Grille · System · Info |
+| `grille_audit` | Grille · System · Audit Log |
+| `grille_reload_config` | Grille · System · Reload Config |
+| `grille_session_stats` | Grille · System · Session Stats |
+
+---
+
 ## What Grille Covers
 
 Grille is the local-machine layer. It handles everything that runs on your Windows machine:
