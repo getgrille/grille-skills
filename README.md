@@ -1,6 +1,6 @@
 # grille-skills
 
-**14 skills for every Grille module. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, and Windsurf.**
+**15 skills for every Grille module. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, and Windsurf.**
 
 <!-- mcp-name: io.github.getgrille/grille -->
 
@@ -42,6 +42,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-remote](./grille-remote/SKILL.md) | "ssh_run", "remote_copy", "deploy to server", "run on remote machine", "copy file to remote" | `ssh_run`, `remote_copy` |
 | [grille-registry](./grille-registry/SKILL.md) | "read registry", "write registry", "HKCU", "HKLM", "registry_read_value" | `registry_read_value`, `registry_list_key`, `registry_set_value`, `registry_delete_value` |
 | [grille-eventlog](./grille-eventlog/SKILL.md) | "event log", "windows events", "check for errors in event log", "Grille security events" | `eventlog_query` |
+| [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
@@ -98,6 +99,10 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `registry_set_value` | Grille · Registry · Set Value |
 | `registry_delete_value` | Grille · Registry · Delete Value |
 | `eventlog_query` | Grille · Event Log · Query |
+| `ps_list` | Grille · Processes · List |
+| `ps_kill` | Grille · Processes · Kill |
+| `ps_tree` | Grille · Processes · Tree |
+| `ps_wait` | Grille · Processes · Wait |
 | `grille_info` | Grille · System · Info |
 | `grille_audit` | Grille · System · Audit Log |
 | `grille_reload_config` | Grille · System · Reload Config |
@@ -120,6 +125,7 @@ Grille is the local-machine layer. It handles everything that runs on your Windo
 - **Remote execution** — SSH commands and SCP file transfer to named hosts
 - **Registry** — read/write within scoped key allowlists, HKLM writes always denied
 - **Windows Event Log** — query system, application, and security channels
+- **Processes** — list all running processes with 17 fields (CPU%, memory, vendor, path, command line), kill with three-layer security protection, process tree, wait for exit
 
 ---
 
