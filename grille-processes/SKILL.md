@@ -15,6 +15,8 @@ This skill covers Grille's Processes module — 6 tools for Windows process insp
 - `ps_kill` — Terminate a process by PID or name. Three-layer security protection (see Security model).
 - `ps_tree` — Parent-child process hierarchy via ToolHelp32. Fast — no CPU sampling or WMI call.
 - `ps_wait` — Poll until a process exits or timeout expires (max 300s). Returns exit status per PID.
+- `ps_snapshot` — Capture a named point-in-time snapshot of all running processes to disk (`%APPDATA%\Grille\snapshots\<name>.json`). Also: `list=true` to enumerate saved snapshots, `delete="name"` to remove one. Auto-purges snapshots older than 7 days.
+- `ps_diff` — Compare a saved snapshot against another snapshot or live state. Sections: started, exited, restarted. `filter_name` to scope results.
 - `ps_snapshot` — Capture a named point-in-time snapshot of all running processes to disk. Also: list and delete snapshots.
 - `ps_diff` — Compare two snapshots (or one snapshot vs. live state) to see what started, exited, or restarted.
 
