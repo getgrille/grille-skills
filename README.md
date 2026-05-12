@@ -1,6 +1,6 @@
 # grille-skills
 
-**15 skills for every Grille module. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, and Windsurf.**
+**17 skills for every Grille module. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, and Windsurf.**
 
 <!-- mcp-name: io.github.getgrille/grille -->
 
@@ -43,6 +43,8 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-registry](./grille-registry/SKILL.md) | "read registry", "write registry", "HKCU", "HKLM", "registry_read_value" | `registry_read_value`, `registry_list_key`, `registry_set_value`, `registry_delete_value` |
 | [grille-eventlog](./grille-eventlog/SKILL.md) | "event log", "windows events", "check for errors in event log", "Grille security events" | `eventlog_query` |
 | [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait` |
+| [grille-git](./grille-git/SKILL.md) | "git status", "commit history", "git log", "show diff", "commit changes", "switch branch", "fetch from remote", "stash changes" | `git_status`, `git_log`, `git_diff`, `git_branches`, `git_show`, `git_stash_list`, `git_commit`, `git_checkout`, `git_stash`, `git_stash_pop`, `git_fetch` |
+| [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
@@ -103,6 +105,23 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `ps_kill` | Grille · Processes · Kill |
 | `ps_tree` | Grille · Processes · Tree |
 | `ps_wait` | Grille · Processes · Wait |
+| `ps_snapshot` | Grille · Processes · Snapshot |
+| `ps_diff` | Grille · Processes · Diff |
+| `git_status` | Grille · Git · Status |
+| `git_log` | Grille · Git · Log |
+| `git_diff` | Grille · Git · Diff |
+| `git_branches` | Grille · Git · Branches |
+| `git_show` | Grille · Git · Show |
+| `git_stash_list` | Grille · Git · Stash List |
+| `git_commit` | Grille · Git · Commit |
+| `git_checkout` | Grille · Git · Checkout |
+| `git_stash` | Grille · Git · Stash |
+| `git_stash_pop` | Grille · Git · Stash Pop |
+| `git_fetch` | Grille · Git · Fetch |
+| `net_connections` | Grille · Networking · Connections |
+| `net_adapters` | Grille · Networking · Adapters |
+| `net_ping` | Grille · Networking · Ping |
+| `net_dns_lookup` | Grille · Networking · DNS Lookup |
 | `grille_info` | Grille · System · Info |
 | `grille_audit` | Grille · System · Audit Log |
 | `grille_reload_config` | Grille · System · Reload Config |
@@ -125,7 +144,9 @@ Grille is the local-machine layer. It handles everything that runs on your Windo
 - **Remote execution** — SSH commands and SCP file transfer to named hosts
 - **Registry** — read/write within scoped key allowlists, HKLM writes always denied
 - **Windows Event Log** — query system, application, and security channels
-- **Processes** — list all running processes with 17 fields (CPU%, memory, vendor, path, command line), kill with three-layer security protection, process tree, wait for exit
+- **Processes** — list all running processes with 17 fields (CPU%, memory, vendor, path, command line), kill with three-layer security protection, process tree, wait for exit, snapshot and diff
+- **Git** — structured git operations via libgit2: status, log, diff, branches, show, commit, checkout, stash, fetch. 3-12× more token-efficient than `process_run` + `git.exe`.
+- **Networking** — Tier 1 read-only diagnostics: active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup. Native Windows iphlpapi, no elevation required.
 
 ---
 
