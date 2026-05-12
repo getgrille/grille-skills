@@ -1,11 +1,11 @@
 ---
 name: grille-networking
-description: "Use when diagnosing network state or connectivity on the local Windows machine via Grille. WHEN: 'what process is holding port 8080', 'is port 443 open on megatron', 'check if port is open', 'what is my IP address', 'is megatron reachable', 'ping host', 'resolve hostname', 'DNS lookup', 'active connections', 'network adapters', 'what is the Tailscale IP', 'what external connections is my app making', 'why can my container not reach the database', 'net_connections', 'net_adapters', 'net_ping', 'net_dns_lookup', 'net_port_check'. DO NOT USE WHEN: 'run ping.exe or curl.exe' (use grille-process); 'HTTP request or API call' (Tier 2 net_http_get not yet implemented); 'firewall rules' (Tier 3, not implemented); 'network on a remote machine' (use grille-remote for ssh_run)."
+description: "Use when diagnosing network state or connectivity on the local Windows machine via Grille, or looking up domain registration info. WHEN: 'what process is holding port 8080', 'is port 443 open on megatron', 'check if port is open', 'what is my IP address', 'is megatron reachable', 'ping host', 'resolve hostname', 'DNS lookup', 'active connections', 'network adapters', 'what is the Tailscale IP', 'what external connections is my app making', 'why can my container not reach the database', 'net_connections', 'net_adapters', 'net_ping', 'net_dns_lookup', 'net_port_check', 'who owns this domain', 'when does this domain expire', 'domain registration', 'whois', 'nameservers', 'net_whois'. DO NOT USE WHEN: 'run ping.exe or curl.exe' (use grille-process); 'firewall rules' (Tier 3, not implemented); 'network on a remote machine' (use grille-remote for ssh_run)."
 ---
 
 ## Overview
 
-This skill covers Grille's Networking module — Tier 1 read-only diagnostics, 5 tools. All use native Windows APIs (iphlpapi) — no subprocess, no elevation required, structured output. Covers the most common developer and IT network questions without leaving Claude's context.
+This skill covers Grille's Networking module — Tier 1 read-only diagnostics, Tier 2 HTTP and RDAP, 7 tools total. Tier 1 tools use native Windows APIs (iphlpapi) — no subprocess, no elevation required, structured output. Tier 2 tools use `reqwest` for HTTP and RDAP queries.
 
 Requires `"networking"` in the active role's modules list.
 
@@ -17,6 +17,7 @@ Requires `"networking"` in the active role's modules list.
 - `net_dns_lookup` — Forward DNS resolution via system resolver (`getaddrinfo`). Returns all resolved IPv4 and IPv6 addresses. Answers: "What does megatron.local resolve to?", "Has this DNS change propagated?".
 - `net_port_check` — TCP connect test to a specific host:port. Returns OPEN/CLOSED/FILTERED and round-trip latency. Answers: "Is port 5432 open on megatron?", "Is my service listening?", "Can I reach Redis on port 6379?".
 - `net_http_get` — HTTP GET to allowlisted endpoints (configured via `net_allowed_endpoints` in grille.toml). Optional request headers with `{{secret:name}}` resolution for credentials. Returns status code, optional response headers, and body (size-capped at 32 KB default, up to 256 KB). Answers: "Is the API returning 200?", "What does this health endpoint return?", "Query this REST endpoint". GET only — POST is roadmap.
+- `net_whois` — RDAP domain registration lookup via the IANA bootstrap registry. Returns status flags, creation/expiry dates, nameservers, registrar (name + IANA ID + URL), and registrant (or GDPR redaction note). No allowlist required — IANA is hardcoded infrastructure. Answers: "Who owns getgrille.com?", "When does this domain expire?", "What nameservers is it using?", "Is this domain registered?".
 
 ## Patterns
 
@@ -95,6 +96,18 @@ grille:net_http_get url="http://localhost:8000/api/data"
 → Full response headers + body — useful for debugging content-type, cache, etc.
 ```
 
+**Look up domain registration:**
+```
+grille:net_whois domain="getgrille.com"
+→ Status, created/expires, nameservers, registrar, registrant
+
+grille:net_whois domain="example.org"
+→ 404 from RDAP server → "NOT REGISTERED" message
+
+grille:net_whois domain="*.getgrille.com"
+→ Wildcard stripped automatically — looks up "getgrille.com"
+```
+
 **Diagnose container connectivity:**
 ```
 grille:net_connections filter_process="docker"
@@ -166,9 +179,27 @@ Content-Type: application/json
 {"status":"ok","version":"1.2.3"}
 ```
 
+**net_whois:**
+```
+[OK] net whois — getgrille.com
+
+  Status:        active
+  Created:       2024-11-15
+  Updated:       2025-03-02
+  Expires:       2026-11-15
+  Nameservers:   brad.ns.cloudflare.com, uma.ns.cloudflare.com
+  Registrar:     Cloudflare, Inc.
+  IANA ID:       1910
+  Registrar URL: https://rdap.cloudflare.com
+  Registrant:    [redacted — GDPR/privacy proxy]
+
+  RDAP server: https://rdap.cloudflare.com
+```
+
 ## ⛔ Common mistakes
 
-- **Expecting HTTP fetch** — `net_http_get` is now implemented for allowlisted private/local endpoints. For public internet URLs, use Claude's native web search — it's more capable and needs no config.
+- **Expecting HTTP fetch** — `net_http_get` is available for allowlisted private/local endpoints. For public internet URLs, use Claude's native web search — it's more capable and needs no config.
+- **`net_whois` for TLDs without RDAP** — some country-code TLDs don't publish RDAP servers in the IANA bootstrap. The tool returns a clear "No RDAP server found for TLD" error in that case.
 - **Hitting authenticated endpoints without a token** — `net_http_get` supports `Authorization` headers via `{{secret:name}}` refs. Store credentials in Windows Credential Manager; never pass raw tokens in args.
 - **URL not in allowlist** — `net_http_get` will deny any URL not matching a `[[roles.<role>.net_allowed_endpoints]]` entry. Add the endpoint to grille.toml first.
 - **Remote machine networking** — these tools only see the local machine. For megatron's connections, use `grille:ssh_run` with `ss` or `netstat`.
