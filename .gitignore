@@ -1,0 +1,6 @@
+# Stale bare git repo accidentally created in S41
+grille-processes/config
+grille-processes/HEAD
+grille-processes/hooks/
+grille-processes/info/
+grille-processes/description
