@@ -16,6 +16,7 @@ Requires `"networking"` in the active role's modules list.
 - `net_ping` — ICMP echo via `IcmpSendEcho` (no raw socket privileges needed). Returns RTT min/avg/max and packet loss. Answers: "Is megatron reachable?", "What is the latency to this host?".
 - `net_dns_lookup` — Forward DNS resolution via system resolver (`getaddrinfo`). Returns all resolved IPv4 and IPv6 addresses. Answers: "What does megatron.local resolve to?", "Has this DNS change propagated?".
 - `net_port_check` — TCP connect test to a specific host:port. Returns OPEN/CLOSED/FILTERED and round-trip latency. Answers: "Is port 5432 open on megatron?", "Is my service listening?", "Can I reach Redis on port 6379?".
+- `net_http_get` — HTTP GET to allowlisted endpoints (configured via `net_allowed_endpoints` in grille.toml). Optional request headers with `{{secret:name}}` resolution for credentials. Returns status code, optional response headers, and body (size-capped at 32 KB default, up to 256 KB). Answers: "Is the API returning 200?", "What does this health endpoint return?", "Query this REST endpoint". GET only — POST is roadmap.
 
 ## Patterns
 
@@ -75,6 +76,23 @@ grille:net_port_check host="localhost" port=6379
 
 grille:net_port_check host="external.host.com" port=443 timeout_ms=2000
 → OPEN / FILTERED — use for service reachability checks
+```
+
+**HTTP GET to a local or private endpoint:**
+```
+grille:net_http_get url="http://192.168.1.221:8000/health"
+→ 200 OK — service is up
+
+grille:net_http_get url="http://localhost:8000/api/status"
+→ Status code + body — check what the API returns
+
+grille:net_http_get url="http://192.168.1.221:8000/api/projects"
+  headers={"Authorization": "Bearer {{secret:rekn-dev-key}}"}
+→ Authenticated request — secret resolved from Credential Manager, never logged
+
+grille:net_http_get url="http://localhost:8000/api/data"
+  include_response_headers=true
+→ Full response headers + body — useful for debugging content-type, cache, etc.
 ```
 
 **Diagnose container connectivity:**
@@ -139,9 +157,20 @@ Tailscale (UP)
   Latency: 2ms
 ```
 
+**net_http_get:**
+```
+[OK] GET http://192.168.1.221:8000/health — 200 OK (24ms)
+Endpoint: rekn-local
+Content-Type: application/json
+
+{"status":"ok","version":"1.2.3"}
+```
+
 ## ⛔ Common mistakes
 
-- **Expecting HTTP fetch** — `net_http_get` is Tier 2 and not yet implemented. Use `process_run` with `curl.exe` if allowed.
+- **Expecting HTTP fetch** — `net_http_get` is now implemented for allowlisted private/local endpoints. For public internet URLs, use Claude's native web search — it's more capable and needs no config.
+- **Hitting authenticated endpoints without a token** — `net_http_get` supports `Authorization` headers via `{{secret:name}}` refs. Store credentials in Windows Credential Manager; never pass raw tokens in args.
+- **URL not in allowlist** — `net_http_get` will deny any URL not matching a `[[roles.<role>.net_allowed_endpoints]]` entry. Add the endpoint to grille.toml first.
 - **Remote machine networking** — these tools only see the local machine. For megatron's connections, use `grille:ssh_run` with `ss` or `netstat`.
 - **Expecting firewall rules** — `net_firewall_list` is Tier 3, not yet implemented.
 - **Confusing net_connections with net_port_check** — `net_connections` shows what is currently connected on *this* machine; `net_port_check` actively probes whether a remote host:port is reachable.

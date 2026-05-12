@@ -44,7 +44,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-eventlog](./grille-eventlog/SKILL.md) | "event log", "windows events", "check for errors in event log", "Grille security events" | `eventlog_query` |
 | [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait` |
 | [grille-git](./grille-git/SKILL.md) | "git status", "commit history", "git log", "show diff", "commit changes", "switch branch", "fetch from remote", "stash changes" | `git_status`, `git_log`, `git_diff`, `git_branches`, `git_show`, `git_stash_list`, `git_commit`, `git_checkout`, `git_stash`, `git_stash_pop`, `git_fetch` |
-| [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "is port open", "check if port is open", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup`, `net_port_check` |
+| [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "is port open", "check if port is open", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters", "is the API up", "check health endpoint", "query REST API on localhost" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup`, `net_port_check`, `net_http_get` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
@@ -124,6 +124,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `net_ping` | Grille · Networking · Ping |
 | `net_dns_lookup` | Grille · Networking · DNS Lookup |
 | `net_port_check` | Grille · Networking · Port Check |
+| `net_http_get` | Grille · Networking · HTTP GET |
 | `grille_info` | Grille · System · Info |
 | `grille_audit` | Grille · System · Audit Log |
 | `grille_reload_config` | Grille · System · Reload Config |
@@ -148,7 +149,7 @@ Grille is the local-machine layer. It handles everything that runs on your Windo
 - **Windows Event Log** — query system, application, and security channels
 - **Processes** — list all running processes with 17 fields (CPU%, memory, vendor, path, command line), kill with three-layer security protection, process tree, wait for exit, snapshot and diff
 - **Git** — structured git operations via libgit2: status, log, diff, branches, show, commit, checkout, stash, fetch. 3-12× more token-efficient than `process_run` + `git.exe`.
-- **Networking** — Tier 1 read-only diagnostics: active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check. Native Windows iphlpapi, no elevation required.
+- **Networking** — Tier 1 read-only diagnostics: active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check. Tier 2: allowlist-gated HTTP GET with secret-ref header support for authenticated private/local endpoints. Native Windows iphlpapi, no elevation required.
 
 ---
 
