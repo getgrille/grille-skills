@@ -31,7 +31,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 
 | Skill | Trigger | Tools Covered |
 |-------|---------|---------------|
-| [grille-filesystem](./grille-filesystem/SKILL.md) | "read file", "write file", "edit file", "search codebase", "find file", "list directory", "copy file", "delete file", "diff", "append to" | `fs_read_file`, `fs_write_file`, `fs_str_replace`, `fs_append_file`, `fs_list_directory`, `fs_find`, `fs_copy_file`, `fs_stat`, `fs_diff`, `fs_create_directory`, `fs_delete_file`, `fs_delete_directory` |
+| [grille-filesystem](./grille-filesystem/SKILL.md) | "read file", "write file", "edit file", "search codebase", "find file", "search in file", "list directory", "copy file", "delete file", "diff", "append to" | `fs_read_file`, `fs_write_file`, `fs_str_replace`, `fs_append_file`, `fs_list_directory`, `fs_find`, `fs_search`, `fs_copy_file`, `fs_stat`, `fs_diff`, `fs_create_directory`, `fs_delete_file`, `fs_delete_directory` |
 | [grille-process](./grille-process/SKILL.md) | "run cargo build", "run git", "execute xcopy", "run npm", "compile", "build the project" | `process_run` |
 | [grille-powershell](./grille-powershell/SKILL.md) | "run Get-Process", "run cmdlet", "Test-NetConnection", "Get-Service", "ps_run" | `ps_run` |
 | [grille-docker](./grille-docker/SKILL.md) | "docker ps", "start container", "stop container", "docker logs", "compose up", "docker exec" | `docker_ps`, `docker_logs`, `docker_inspect`, `docker_images`, `docker_stats`, `docker_start`, `docker_stop`, `docker_compose_*`, `docker_exec` |
@@ -44,7 +44,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-eventlog](./grille-eventlog/SKILL.md) | "event log", "windows events", "check for errors in event log", "Grille security events" | `eventlog_query` |
 | [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait` |
 | [grille-git](./grille-git/SKILL.md) | "git status", "commit history", "git log", "show diff", "commit changes", "switch branch", "fetch from remote", "stash changes" | `git_status`, `git_log`, `git_diff`, `git_branches`, `git_show`, `git_stash_list`, `git_commit`, `git_checkout`, `git_stash`, `git_stash_pop`, `git_fetch` |
-| [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup` |
+| [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "is port open", "check if port is open", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup`, `net_port_check` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
@@ -68,6 +68,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `fs_create_directory` | Grille · Filesystem · Create Directory |
 | `fs_delete_file` | Grille · Filesystem · Delete File |
 | `fs_delete_directory` | Grille · Filesystem · Delete Directory |
+| `fs_search` | Grille · Filesystem · Search in File |
 | `process_run` | Grille · Process · Run Executable |
 | `ps_run` | Grille · PowerShell · Run Cmdlet |
 | `docker_ps` | Grille · Docker · List Containers |
@@ -122,6 +123,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `net_adapters` | Grille · Networking · Adapters |
 | `net_ping` | Grille · Networking · Ping |
 | `net_dns_lookup` | Grille · Networking · DNS Lookup |
+| `net_port_check` | Grille · Networking · Port Check |
 | `grille_info` | Grille · System · Info |
 | `grille_audit` | Grille · System · Audit Log |
 | `grille_reload_config` | Grille · System · Reload Config |
@@ -146,7 +148,7 @@ Grille is the local-machine layer. It handles everything that runs on your Windo
 - **Windows Event Log** — query system, application, and security channels
 - **Processes** — list all running processes with 17 fields (CPU%, memory, vendor, path, command line), kill with three-layer security protection, process tree, wait for exit, snapshot and diff
 - **Git** — structured git operations via libgit2: status, log, diff, branches, show, commit, checkout, stash, fetch. 3-12× more token-efficient than `process_run` + `git.exe`.
-- **Networking** — Tier 1 read-only diagnostics: active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup. Native Windows iphlpapi, no elevation required.
+- **Networking** — Tier 1 read-only diagnostics: active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check. Native Windows iphlpapi, no elevation required.
 
 ---
 

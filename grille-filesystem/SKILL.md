@@ -1,6 +1,6 @@
 ---
 name: grille-filesystem
-description: "Use when reading, writing, editing, searching, or managing files on Windows via Grille. WHEN: 'read file', 'write file', 'edit file', 'search codebase', 'find file', 'list directory', 'copy file', 'delete file', 'diff files', 'append to doc'. DO NOT USE WHEN: running executables (use grille-process), querying databases (use grille-sql), reading registry (use grille-registry)."
+description: "Use when reading, writing, editing, searching, or managing files on Windows via Grille. WHEN: 'read file', 'write file', 'edit file', 'search codebase', 'find file', 'search in file', 'grep file', 'list directory', 'copy file', 'delete file', 'diff files', 'append to doc'. DO NOT USE WHEN: running executables (use grille-process), querying databases (use grille-sql), reading registry (use grille-registry)."
 ---
 
 ## Overview
@@ -23,6 +23,7 @@ All filesystem operations are RBAC-gated. Every path is canonicalized and valida
 - `fs_create_directory` — Create a directory and any missing parents.
 - `fs_delete_file` — Soft-delete a file to `%TEMP%\grille-trash\`. Recoverable. Never permanent.
 - `fs_delete_directory` — Soft-delete a directory tree to trash. Denied on drive roots and workspace root paths.
+- `fs_search` — Search within a single file for a literal substring or regex pattern. Returns matching lines with line numbers and configurable context. Much faster and more token-efficient than paginating `fs_read_file` for large files — returns only the relevant lines. Supports `start_line`/`end_line` scope limiting.
 
 ## Patterns
 
@@ -51,6 +52,8 @@ All filesystem operations are RBAC-gated. Every path is canonicalized and valida
 ```
 fs_find to locate files by name before constructing paths from memory.
 fs_list_directory to enumerate a directory before reading individual files.
+fs_search to find a specific string, function, or pattern in a known file
+  without reading the whole file — especially useful for large source files.
 ```
 
 **Always verify writes:**
