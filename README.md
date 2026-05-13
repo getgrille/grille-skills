@@ -37,6 +37,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-docker](./grille-docker/SKILL.md) | "docker ps", "start container", "stop container", "docker logs", "compose up", "docker exec" | `docker_ps`, `docker_logs`, `docker_inspect`, `docker_images`, `docker_stats`, `docker_start`, `docker_stop`, `docker_compose_*`, `docker_exec` |
 | [grille-sql](./grille-sql/SKILL.md) | "sql query", "select from", "insert into", "run migration", "describe table", "sql transaction" | `sql_query`, `sql_execute`, `sql_begin`, `sql_commit`, `sql_rollback`, `sql_list_tables`, `sql_describe` |
 | [grille-secrets](./grille-secrets/SKILL.md) | "secret not resolving", "configure AKV", "secret_ref", "{{secret:}}", "credential error" | Transparent (no direct tools — resolved via `{{secret:}}` refs) |
+| [grille-system](./grille-system/SKILL.md) | "start of session", "is Grille healthy", "check system state", "OS version", "disk space", "RAM usage", "any errors this session", "grille_diagnose", "grille_health", "grille_info", "grille_session_stats" | `grille_diagnose`, `grille_info`, `grille_health`, `grille_session_stats`, `grille_reload_config` |
 | [grille-audit](./grille-audit/SKILL.md) | "did that write succeed", "check audit log", "what did Claude do", "any errors", "verify the action" | `grille_audit` |
 | [grille-services](./grille-services/SKILL.md) | "service status", "start service", "stop service", "restart service", "is service running" | `service_list`, `service_get`, `service_start`, `service_stop`, `service_restart` |
 | [grille-remote](./grille-remote/SKILL.md) | "ssh_run", "remote_copy", "deploy to server", "run on remote machine", "copy file to remote" | `ssh_run`, `remote_copy` |
@@ -127,6 +128,8 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `net_http_get` | Grille · Networking · HTTP GET |
 | `net_whois` | Grille · Networking · WHOIS |
 | `grille_info` | Grille · System · Info |
+| `grille_diagnose` | Grille · System · Diagnose |
+| `grille_health` | Grille · System · Health |
 | `grille_audit` | Grille · System · Audit Log |
 | `grille_reload_config` | Grille · System · Reload Config |
 | `grille_session_stats` | Grille · System · Session Stats |
