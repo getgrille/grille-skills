@@ -38,6 +38,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-sql](./grille-sql/SKILL.md) | "sql query", "select from", "insert into", "run migration", "describe table", "sql transaction" | `sql_query`, `sql_execute`, `sql_begin`, `sql_commit`, `sql_rollback`, `sql_list_tables`, `sql_describe` |
 | [grille-secrets](./grille-secrets/SKILL.md) | "secret not resolving", "configure AKV", "secret_ref", "{{secret:}}", "credential error" | Transparent (no direct tools — resolved via `{{secret:}}` refs) |
 | [grille-system](./grille-system/SKILL.md) | "start of session", "is Grille healthy", "check system state", "OS version", "disk space", "RAM usage", "any errors this session", "grille_diagnose", "grille_health", "grille_info", "grille_session_stats" | `grille_diagnose`, `grille_info`, `grille_health`, `grille_session_stats`, `grille_reload_config` |
+| [grille-sysinfo](./grille-sysinfo/SKILL.md) | "OS version", "uptime", "disk space", "RAM", "installed software", "sys_summary", "sys_drives", "sys_software", "check disk before build" | `sys_summary`, `sys_drives`, `sys_software` |
 | [grille-audit](./grille-audit/SKILL.md) | "did that write succeed", "check audit log", "what did Claude do", "any errors", "verify the action" | `grille_audit` |
 | [grille-services](./grille-services/SKILL.md) | "service status", "start service", "stop service", "restart service", "is service running" | `service_list`, `service_get`, `service_start`, `service_stop`, `service_restart` |
 | [grille-remote](./grille-remote/SKILL.md) | "ssh_run", "remote_copy", "deploy to server", "run on remote machine", "copy file to remote" | `ssh_run`, `remote_copy` |
@@ -127,6 +128,9 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `net_port_check` | Grille · Networking · Port Check |
 | `net_http_get` | Grille · Networking · HTTP GET |
 | `net_whois` | Grille · Networking · WHOIS |
+| `sys_summary` | Grille · System Info · Summary |
+| `sys_drives` | Grille · System Info · Drives |
+| `sys_software` | Grille · System Info · Installed Software |
 | `grille_info` | Grille · System · Info |
 | `grille_diagnose` | Grille · System · Diagnose |
 | `grille_health` | Grille · System · Health |
@@ -153,7 +157,9 @@ Grille is the local-machine layer. It handles everything that runs on your Windo
 - **Windows Event Log** — query system, application, and security channels
 - **Processes** — list all running processes with 17 fields (CPU%, memory, vendor, path, command line), kill with three-layer security protection, process tree, wait for exit, snapshot and diff
 - **Git** — structured git operations via libgit2: status, log, diff, branches, show, commit, checkout, stash, fetch. 3-12× more token-efficient than `process_run` + `git.exe`.
-- **Networking** — Tier 1 read-only diagnostics: active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check. Tier 2: allowlist-gated HTTP GET with secret-ref header support for authenticated private/local endpoints; RDAP domain registration lookup via IANA bootstrap. Native Windows iphlpapi, no elevation required.
+- **Networking** — active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check, allowlist-gated HTTP GET with secret-ref header support, RDAP/WHOIS domain registration lookup via IANA bootstrap. Native Windows iphlpapi, no elevation required.
+- **System info** — OS display version (via RtlGetVersion), uptime, RAM usage, per-drive disk space, installed software inventory. Native Win32 APIs — no WMI, no subprocess, no elevation.
+- **Diagnostics** — `grille_diagnose` consolidated health snapshot (server, OS, RAM, drives, session errors, Windows Event Log errors in one call); `grille_info`, `grille_health`, `grille_session_stats`. Always available — no module required.
 
 ---
 
