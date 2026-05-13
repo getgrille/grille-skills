@@ -41,7 +41,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-sysinfo](./grille-sysinfo/SKILL.md) | "OS version", "uptime", "disk space", "RAM", "installed software", "sys_summary", "sys_drives", "sys_software", "check disk before build" | `sys_summary`, `sys_drives`, `sys_software` |
 | [grille-audit](./grille-audit/SKILL.md) | "did that write succeed", "check audit log", "what did Claude do", "any errors", "verify the action" | `grille_audit` |
 | [grille-services](./grille-services/SKILL.md) | "service status", "start service", "stop service", "restart service", "is service running" | `service_list`, `service_get`, `service_start`, `service_stop`, `service_restart` |
-| [grille-remote](./grille-remote/SKILL.md) | "ssh_run", "remote_copy", "deploy to server", "run on remote machine", "copy file to remote" | `ssh_run`, `remote_copy` |
+| [grille-ssh](./grille-ssh/SKILL.md) | "ssh_run", "ssh_copy", "deploy to server", "run on remote machine", "copy file to remote" | `ssh_run`, `ssh_copy` |
 | [grille-registry](./grille-registry/SKILL.md) | "read registry", "write registry", "HKCU", "HKLM", "registry_read_value" | `registry_read_value`, `registry_list_key`, `registry_set_value`, `registry_delete_value` |
 | [grille-eventlog](./grille-eventlog/SKILL.md) | "event log", "windows events", "check for errors in event log", "Grille security events" | `eventlog_query` |
 | [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait` |
@@ -97,8 +97,8 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `service_start` | Grille · Services · Start |
 | `service_stop` | Grille · Services · Stop |
 | `service_restart` | Grille · Services · Restart |
-| `ssh_run` | Grille · Remote · SSH Run |
-| `remote_copy` | Grille · Remote · Copy File |
+| `ssh_run` | Grille · SSH · Run |
+| `ssh_copy` | Grille · SSH · Copy File |
 | `registry_list_key` | Grille · Registry · List Key |
 | `registry_read_value` | Grille · Registry · Read Value |
 | `registry_set_value` | Grille · Registry · Set Value |

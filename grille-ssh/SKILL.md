@@ -1,18 +1,20 @@
 ---
-name: grille-remote
-description: "Use when running commands or transferring files on remote SSH hosts configured in grille.toml. WHEN: 'ssh_run', 'remote_copy', 'deploy to server', 'run on remote machine', 'copy file to remote', 'check remote machine'. DO NOT USE WHEN: managing local Docker (use grille-docker); local file operations (use grille-filesystem)."
+name: grille-ssh
+description: "Use when running commands or transferring files on remote SSH hosts configured in grille.toml. WHEN: 'ssh_run', 'remote_copy', 'deploy to server', 'run on remote machine', 'copy file to remote', 'check remote machine', 'ssh into server'. DO NOT USE WHEN: managing local Docker (use grille-docker); local file operations (use grille-filesystem)."
 ---
 
 ## Overview
 
-This skill covers Grille's remote module — SSH-based access to named remote machines. Apply it when Claude needs to execute commands on a remote server, deploy files, or inspect a remote system. All remote operations target named hosts defined in `grille.toml` — not arbitrary IP addresses or hostnames.
+This skill covers Grille's ssh module — outbound SSH access to named remote machines. Apply it when Claude needs to execute commands on a remote server, deploy files, or inspect a remote system. All operations target named hosts defined in `grille.toml` — not arbitrary IP addresses or hostnames.
+
+"Outbound" is important: Grille's SSH is Claude reaching out *from your machine to a server you configured*. It is not RDP, WinRM, or PowerShell Remoting — there is no inbound attack surface.
 
 Remote hosts and their connection details (IP, user, identity file, allowed commands, upload/download paths) are configured per-machine in `grille.toml` under `[[roles.<role>.remote_hosts]]`.
 
 ## Tools
 
 - `ssh_run` — Execute an allowlisted command on a named remote SSH host. Returns stdout and stderr.
-- `remote_copy` — Copy a file to or from a named remote host via SCP. Supports upload (local → remote) and download (remote → local).
+- `ssh_copy` — Copy a file to or from a named remote host via SCP. Supports upload (local → remote) and download (remote → local).
 
 ## Patterns
 
@@ -32,7 +34,7 @@ grille:ssh_run
 
 **Upload a compiled binary:**
 ```
-grille:remote_copy
+grille:ssh_copy
   host="<remote-host>"
   direction="upload"
   local_path="C:\\dev\\myapp\\target\\release\\myapp.exe"
@@ -41,7 +43,7 @@ grille:remote_copy
 
 **Download a log file:**
 ```
-grille:remote_copy
+grille:ssh_copy
   host="<remote-host>"
   direction="download"
   remote_path="/var/log/myapp/app.log"
@@ -50,7 +52,7 @@ grille:remote_copy
 
 **Chain: deploy and restart a service:**
 ```
-1. grille:remote_copy (upload binary to /tmp/)
+1. grille:ssh_copy (upload binary to /tmp/)
 2. grille:ssh_run command="sudo cp /tmp/myapp /opt/myapp/myapp"
 3. grille:ssh_run command="sudo systemctl restart myapp"
 4. grille:ssh_run command="systemctl status myapp"
@@ -62,11 +64,11 @@ grille:remote_copy
 
 ⛔ **`host` must be a named host from grille.toml, not an IP address or hostname. Raw IPs will be rejected. Use the configured host name (e.g. `"my-server"`).**
 
-- **Commands must be in the `allowed_commands` list for the target host.** Each remote host has its own `allowed_commands` allowlist in `grille.toml`. Commands not in the list are denied at the Grille layer before any SSH connection is made. Check `grille.toml` or `grille_info` to see what is configured.
+- **Commands must be in the `allowed_commands` list for the target host.** Each remote host has its own `allowed_commands` allowlist in `grille.toml`. Commands not in the list are denied at the Grille layer before any SSH connection is made.
 - **Remote upload paths must be in `allowed_upload_paths`.** Files cannot be uploaded to arbitrary paths — only paths configured under `allowed_upload_paths` for the target host.
 - **Remote download paths must be in `allowed_download_paths`.** Read access is scoped to paths configured under `allowed_download_paths` for the target host.
 - **`ssh_run` timeout is 60 seconds.** For long-running remote commands, consider running them in the background (`command &`) or breaking the work into shorter steps.
-- **`remote_copy` uses SCP** — it transfers individual files, not directories. For directory transfers, tar the directory first with `ssh_run`, then copy the tarball.
+- **`ssh_copy` uses SCP** — it transfers individual files, not directories. For directory transfers, tar the directory first with `ssh_run`, then copy the tarball.
 
 ## Examples
 
@@ -84,7 +86,7 @@ grille:ssh_run host="<remote-host>" command="systemctl status myapp"
 
 **Example 2: Deploy an updated binary and verify startup**
 ```
-grille:remote_copy
+grille:ssh_copy
   host="<remote-host>"
   direction="upload"
   local_path="C:\\dev\\myapp\\target\\release\\myapp.exe"
