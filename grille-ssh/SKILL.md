@@ -9,7 +9,7 @@ This skill covers Grille's ssh module — outbound SSH access to named remote ma
 
 "Outbound" is important: Grille's SSH is Claude reaching out *from your machine to a server you configured*. It is not RDP, WinRM, or PowerShell Remoting — there is no inbound attack surface.
 
-Remote hosts and their connection details (IP, user, identity file, allowed commands, upload/download paths) are configured per-machine in `grille.toml` under `[[roles.<role>.remote_hosts]]`.
+Remote hosts and their connection details (IP, user, identity file, allowed commands, upload/download paths) are configured per-machine in `grille.toml` under `[[roles.<role>.ssh_hosts]]`.
 
 ## Tools
 
@@ -60,7 +60,7 @@ grille:ssh_copy
 
 ## Constraints
 
-- **Do not use IP addresses or hostnames as the `host` parameter.** `host` must be a name from `grille.toml`'s `remote_hosts` list, not a raw IP or hostname. Grille resolves all connection details from the named host definition.
+- **Do not use IP addresses or hostnames as the `host` parameter.** `host` must be a name from `grille.toml`'s `ssh_hosts` list, not a raw IP or hostname. Grille resolves all connection details from the named host definition.
 
 ⛔ **`host` must be a named host from grille.toml, not an IP address or hostname. Raw IPs will be rejected. Use the configured host name (e.g. `"my-server"`).**
 
