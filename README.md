@@ -120,6 +120,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `git_checkout` | Grille · Git · Checkout |
 | `git_stash` | Grille · Git · Stash |
 | `git_stash_pop` | Grille · Git · Stash Pop |
+| `git_remote` | Grille · Git · Remotes |
 | `git_fetch` | Grille · Git · Fetch |
 | `net_connections` | Grille · Networking · Connections |
 | `net_adapters` | Grille · Networking · Adapters |
@@ -135,6 +136,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `grille_diagnose` | Grille · System · Diagnose |
 | `grille_health` | Grille · System · Health |
 | `grille_audit` | Grille · System · Audit Log |
+| `grille_secrets_doctor` | Grille · System · Secrets Doctor |
 | `grille_reload_config` | Grille · System · Reload Config |
 | `grille_session_stats` | Grille · System · Session Stats |
 
