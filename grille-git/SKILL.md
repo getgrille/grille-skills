@@ -1,11 +1,11 @@
 ---
 name: grille-git
-description: "Use when performing git operations on a repository via Grille. WHEN: 'git status', 'what changed', 'commit history', 'git log', 'show diff', 'what files changed', 'commit these changes', 'switch branch', 'create branch', 'stash changes', 'fetch from remote', 'git_status', 'git_log', 'git_diff', 'git_branches', 'git_show', 'git_stash_list', 'git_commit', 'git_checkout', 'git_stash', 'git_stash_pop', 'git_fetch'. DO NOT USE WHEN: 'push to remote' (git push not supported — SSH agent OS limitation; use process_run with git.exe manually); 'clone a repository' (out of scope); 'merge or rebase' (interactive, not supported)."
+description: "Use when performing git operations on a repository via Grille. WHEN: 'git status', 'what changed', 'commit history', 'git log', 'show diff', 'what files changed', 'commit these changes', 'switch branch', 'create branch', 'stash changes', 'fetch from remote', 'where does this repo push to', 'what is the origin URL', 'git remotes', 'git_status', 'git_log', 'git_diff', 'git_branches', 'git_show', 'git_stash_list', 'git_commit', 'git_checkout', 'git_stash', 'git_stash_pop', 'git_fetch', 'git_remote'. DO NOT USE WHEN: 'push to remote' (git push not supported — SSH agent OS limitation; use process_run with git.exe manually); 'clone a repository' (out of scope); 'merge or rebase' (interactive, not supported)."
 ---
 
 ## Overview
 
-This skill covers Grille's Git module — 11 tools for structured git operations via libgit2 (no subprocess). Compared to `process_run` + `git.exe`: 1.8× more token-efficient on average, up to 20-25× on diffs. No subprocess spawn overhead. Structured data Claude can reason over rather than text to parse.
+This skill covers Grille's Git module — 12 tools for structured git operations via libgit2 (no subprocess). Compared to `process_run` + `git.exe`: 1.8× more token-efficient on average, up to 20-25× on diffs. No subprocess spawn overhead. Structured data Claude can reason over rather than text to parse.
 
 All `path` parameters must be within `fs_allowed_paths`. Write tools require `git_write_enabled = true` in role config. `git push` is not implemented — SSH agent is inaccessible from the Grille subprocess context on Windows (OS limitation).
 
@@ -18,6 +18,7 @@ All `path` parameters must be within `fs_allowed_paths`. Write tools require `gi
 - `git_branches` — Branch list with last commit info and ahead/behind counts vs upstream. `include_remote=true` for remote-tracking branches.
 - `git_show` — Single commit detail: author, date, message, file-level diff stats (or full patch). Defaults to HEAD.
 - `git_stash_list` — All stash entries with index, message, and timestamp.
+- `git_remote` — List configured remotes with fetch and push URLs. Answers "where does this repo push to?" and "what is the origin URL?"
 
 **Write (require `git_write_enabled = true`):**
 - `git_commit` — Stage files and commit. `files=["."]` stages all. Returns new commit hash.
@@ -65,6 +66,11 @@ grille:git_commit path="C:\\dev\\myproject" message="fix: port parsing" files=["
 ```
 grille:git_checkout path="C:\\dev\\myproject" target="main"
 grille:git_checkout path="C:\\dev\\myproject" target="feature/networking" create_branch=true
+```
+
+**Check remotes:**
+```
+grille:git_remote path="C:\\dev\\myproject"
 ```
 
 **Fetch:**

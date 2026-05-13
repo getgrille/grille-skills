@@ -1,13 +1,13 @@
 ---
 name: grille-system
-description: "Use for Grille server health, session diagnostics, and machine state. WHEN: 'start of session', 'is Grille healthy', 'check system state', 'what tools are available', 'OS version', 'disk space', 'RAM usage', 'any errors', 'how many calls this session', 'grille_diagnose', 'grille_health', 'grille_info', 'grille_session_stats'. DO NOT USE WHEN: querying the Windows Event Log in depth (use grille-eventlog); reviewing tool call history (use grille-audit)."
+description: "Use for Grille server health, session diagnostics, and machine state. WHEN: 'start of session', 'is Grille healthy', 'check system state', 'what tools are available', 'OS version', 'disk space', 'RAM usage', 'any errors', 'how many calls this session', 'grille_diagnose', 'grille_health', 'grille_info', 'grille_session_stats', 'secrets doctor', 'check secrets', 'is my AKV reachable', 'secret provider health'. DO NOT USE WHEN: querying the Windows Event Log in depth (use grille-eventlog); reviewing tool call history (use grille-audit)."
 ---
 
 ## Overview
 
 This skill covers the always-available Grille system tools — no module needs to be enabled. Use these at the start of every session to confirm Grille is healthy and the machine is in a good state before starting work.
 
-**Tools covered:** `grille_diagnose`, `grille_info`, `grille_health`, `grille_session_stats`, `grille_reload_config`
+**Tools covered:** `grille_diagnose`, `grille_info`, `grille_health`, `grille_session_stats`, `grille_reload_config`, `grille_secrets_doctor`
 
 ---
 
@@ -20,6 +20,7 @@ This skill covers the always-available Grille system tools — no module needs t
 | Is something stuck or slow right now | `grille_health` |
 | How many calls this session, per-tool breakdown | `grille_session_stats` |
 | Apply grille.toml changes without restart | `grille_reload_config` |
+| Are my secret providers reachable and auth working | `grille_secrets_doctor` |
 
 **Default:** when in doubt at the start of a session, run `grille_diagnose` — it covers everything in one call.
 
@@ -80,6 +81,26 @@ Returns a structured breakdown of the current session: duration, total calls, pe
 grille_session_stats()                     # current session
 grille_session_stats(last_n_sessions=3)    # last 3 completed sessions
 ```
+
+---
+
+## grille_secrets_doctor
+
+Health check for all configured secret providers. Reports reachability, authentication status, configured secret ref patterns, and secret count per provider. Use when a tool fails with a secret resolution error to diagnose the root cause.
+
+```
+grille_secrets_doctor()   # no arguments
+```
+
+**Output per provider:**
+- Provider name, type, vault URL (if AKV)
+- Configured ref patterns and which tools they're allowed for
+- Status: `✓ reachable (N secrets found)` or `✗ auth failed — ...` or `✗ unreachable — ...`
+
+**When to use:**
+- A `sql_query` or `ssh_run` fails with a secret resolution error
+- After rotating credentials in AKV or CredMan
+- When setting up a new machine to verify provider connectivity
 
 ---
 
