@@ -35,7 +35,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-process](./grille-process/SKILL.md) | "run cargo build", "run git", "execute xcopy", "run npm", "compile", "build the project" | `process_run` |
 | [grille-powershell](./grille-powershell/SKILL.md) | "run Get-Process", "run cmdlet", "Test-NetConnection", "Get-Service", "ps_run" | `ps_run` |
 | [grille-docker](./grille-docker/SKILL.md) | "docker ps", "start container", "stop container", "docker logs", "compose up", "docker exec" | `docker_ps`, `docker_logs`, `docker_inspect`, `docker_images`, `docker_stats`, `docker_start`, `docker_stop`, `docker_compose_*`, `docker_exec` |
-| [grille-sql](./grille-sql/SKILL.md) | "sql query", "select from", "insert into", "run migration", "describe table", "sql transaction" | `sql_query`, `sql_execute`, `sql_begin`, `sql_commit`, `sql_rollback`, `sql_list_tables`, `sql_describe` |
+| [grille-sql](./grille-sql/SKILL.md) | "sql query", "select from", "insert into", "run migration", "describe table", "sql transaction", "explain query", "slow query" | `sql_query`, `sql_execute`, `sql_explain`, `sql_begin`, `sql_commit`, `sql_rollback`, `sql_list_tables`, `sql_describe` |
 | [grille-secrets](./grille-secrets/SKILL.md) | "secret not resolving", "configure AKV", "secret_ref", "{{secret:}}", "credential error" | Transparent (no direct tools — resolved via `{{secret:}}` refs) |
 | [grille-system](./grille-system/SKILL.md) | "start of session", "is Grille healthy", "check system state", "OS version", "disk space", "RAM usage", "any errors this session", "grille_diagnose", "grille_health", "grille_info", "grille_session_stats" | `grille_diagnose`, `grille_info`, `grille_health`, `grille_session_stats`, `grille_reload_config` |
 | [grille-sysinfo](./grille-sysinfo/SKILL.md) | "OS version", "uptime", "disk space", "RAM", "installed software", "sys_summary", "sys_drives", "sys_software", "check disk before build" | `sys_summary`, `sys_drives`, `sys_software` |
@@ -46,7 +46,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-eventlog](./grille-eventlog/SKILL.md) | "event log", "windows events", "check for errors in event log", "Grille security events" | `eventlog_query` |
 | [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait` |
 | [grille-git](./grille-git/SKILL.md) | "git status", "commit history", "git log", "show diff", "commit changes", "switch branch", "fetch from remote", "stash changes" | `git_status`, `git_log`, `git_diff`, `git_branches`, `git_show`, `git_stash_list`, `git_commit`, `git_checkout`, `git_stash`, `git_stash_pop`, `git_fetch` |
-| [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "is port open", "check if port is open", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters", "is the API up", "check health endpoint", "query REST API on localhost", "who owns this domain", "when does this domain expire", "domain registration", "whois", "nameservers" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup`, `net_port_check`, `net_http_get`, `net_whois` |
+| [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "is port open", "check if port is open", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters", "is the API up", "check health endpoint", "query REST API on localhost", "trigger webhook", "http post", "call api", "who owns this domain", "when does this domain expire", "domain registration", "whois", "nameservers" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup`, `net_port_check`, `net_http_get`, `net_http_post`, `net_whois` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
@@ -87,6 +87,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `docker_compose_restart` | Grille · Docker · Compose Restart |
 | `sql_query` | Grille · SQL · Query |
 | `sql_execute` | Grille · SQL · Execute |
+| `sql_explain` | Grille · SQL · Explain Query |
 | `sql_begin` | Grille · SQL · Begin Transaction |
 | `sql_commit` | Grille · SQL · Commit |
 | `sql_rollback` | Grille · SQL · Rollback |
@@ -128,6 +129,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `net_dns_lookup` | Grille · Networking · DNS Lookup |
 | `net_port_check` | Grille · Networking · Port Check |
 | `net_http_get` | Grille · Networking · HTTP GET |
+| `net_http_post` | Grille · Networking · HTTP POST |
 | `net_whois` | Grille · Networking · WHOIS |
 | `sys_summary` | Grille · System Info · Summary |
 | `sys_drives` | Grille · System Info · Drives |
@@ -159,7 +161,7 @@ Grille is the local-machine layer. It handles everything that runs on your Windo
 - **Windows Event Log** — query system, application, and security channels
 - **Processes** — list all running processes with 17 fields (CPU%, memory, vendor, path, command line), kill with three-layer security protection, process tree, wait for exit, snapshot and diff
 - **Git** — structured git operations via libgit2: status, log, diff, branches, show, commit, checkout, stash, fetch. 3-12× more token-efficient than `process_run` + `git.exe`.
-- **Networking** — active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check, allowlist-gated HTTP GET with secret-ref header support, RDAP/WHOIS domain registration lookup via IANA bootstrap. Native Windows iphlpapi, no elevation required.
+- **Networking** — active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check, allowlist-gated HTTP GET and POST with secret-ref header support, RDAP/WHOIS domain registration lookup via IANA bootstrap. Native Windows iphlpapi, no elevation required.
 - **System info** — OS display version (via RtlGetVersion), uptime, RAM usage, per-drive disk space, installed software inventory. Native Win32 APIs — no WMI, no subprocess, no elevation.
 - **Diagnostics** — `grille_diagnose` consolidated health snapshot (server, OS, RAM, drives, session errors, Windows Event Log errors in one call); `grille_info`, `grille_health`, `grille_session_stats`. Always available — no module required.
 

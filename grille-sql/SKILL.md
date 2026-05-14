@@ -13,6 +13,7 @@ Grille supports PostgreSQL and SQLite connections configured by name in `grille.
 
 - `sql_query` — Execute a SELECT statement. Returns rows up to the configured `max_rows` limit (100–500 depending on connection). Read-only path — mutation statements are rejected.
 - `sql_execute` — Execute INSERT, UPDATE, or DELETE. UPDATE and DELETE trigger a **Grille Safety Check** automatically (see below). Rejected on `read_only` connections.
+- `sql_explain` — Show the query execution plan for a SELECT statement. Pass the SELECT only — Grille adds EXPLAIN. Set `analyze=true` (PostgreSQL only) for real timing and row counts via EXPLAIN ANALYZE. SQLite uses EXPLAIN QUERY PLAN automatically.
 - `sql_begin` — Open a transaction session. Returns a `session_id` for subsequent calls.
 - `sql_commit` — Commit and close an open transaction session.
 - `sql_rollback` — Roll back and close an open transaction session.
@@ -228,6 +229,22 @@ grille:sql_describe connection="nyxis" table="items"
 5a. grille:sql_commit session_id="abc-123"
   — OR —
 5b. grille:sql_rollback session_id="abc-123"   ← if verification failed
+```
+
+**Diagnose a slow query:**
+```
+# Step 1: check the plan (no execution)
+grille:sql_explain
+  connection="nyxis"
+  query="SELECT * FROM network_samples WHERE timestamp > 1700000000 ORDER BY timestamp DESC"
+→ SEARCH network_samples USING INDEX idx_net_ts  ← index hit, fast
+
+# Step 2: if no index, check real timing on Postgres (actually executes)
+grille:sql_explain
+  connection="rekn"
+  query="SELECT * FROM orders WHERE customer_id = 42"
+  analyze=true
+→ Shows real row counts, actual time, buffer hits
 ```
 
 ## Constraints
