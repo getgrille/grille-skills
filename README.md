@@ -39,6 +39,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-secrets](./grille-secrets/SKILL.md) | "secret not resolving", "configure AKV", "secret_ref", "{{secret:}}", "credential error" | Transparent (no direct tools — resolved via `{{secret:}}` refs) |
 | [grille-system](./grille-system/SKILL.md) | "start of session", "is Grille healthy", "check system state", "OS version", "disk space", "RAM usage", "any errors this session", "grille_diagnose", "grille_health", "grille_info", "grille_session_stats" | `grille_diagnose`, `grille_info`, `grille_health`, `grille_session_stats`, `grille_reload_config` |
 | [grille-sysinfo](./grille-sysinfo/SKILL.md) | "OS version", "uptime", "disk space", "RAM", "installed software", "sys_summary", "sys_drives", "sys_software", "check disk before build" | `sys_summary`, `sys_drives`, `sys_software` |
+| [grille-wmi](./grille-wmi/SKILL.md) | "WMI query", "Win32_Processor", "Win32_PhysicalMemory", "RAM slots", "BIOS version", "motherboard info", "hardware inventory", "network adapter config", "startup entries", "Win32_OperatingSystem", "Win32_DiskDrive" | `wmi_query` |
 | [grille-audit](./grille-audit/SKILL.md) | "did that write succeed", "check audit log", "what did Claude do", "any errors", "verify the action" | `grille_audit` |
 | [grille-services](./grille-services/SKILL.md) | "service status", "start service", "stop service", "restart service", "is service running" | `service_list`, `service_get`, `service_start`, `service_stop`, `service_restart` |
 | [grille-ssh](./grille-ssh/SKILL.md) | "ssh_run", "ssh_copy", "deploy to server", "run on remote machine", "copy file to remote" | `ssh_run`, `ssh_copy` |
@@ -134,6 +135,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `sys_summary` | Grille · System Info · Summary |
 | `sys_drives` | Grille · System Info · Drives |
 | `sys_software` | Grille · System Info · Installed Software |
+| `wmi_query` | Grille · WMI · Query |
 | `grille_info` | Grille · System · Info |
 | `grille_diagnose` | Grille · System · Diagnose |
 | `grille_health` | Grille · System · Health |
