@@ -1,6 +1,6 @@
 ---
 name: grille-networking
-description: "Use when diagnosing network state or connectivity on the local Windows machine via Grille, making HTTP requests, or looking up domain registration info. WHEN: 'what process is holding port 8080', 'is port 443 open on megatron', 'check if port is open', 'what is my IP address', 'is megatron reachable', 'ping host', 'resolve hostname', 'DNS lookup', 'active connections', 'network adapters', 'what is the Tailscale IP', 'what external connections is my app making', 'why can my container not reach the database', 'net_connections', 'net_adapters', 'net_ping', 'net_dns_lookup', 'net_port_check', 'http get', 'http post', 'trigger webhook', 'call api', 'net_http_get', 'net_http_post', 'who owns this domain', 'when does this domain expire', 'domain registration', 'whois', 'nameservers', 'net_whois'. DO NOT USE WHEN: 'run ping.exe or curl.exe' (use grille-process); 'firewall rules' (Tier 3, not implemented); 'network on a remote machine' (use grille-remote for ssh_run)."
+description: "Use when diagnosing network state or connectivity on the local Windows machine via Grille, making HTTP requests, or looking up domain registration info. WHEN: 'what process is holding port 8080', 'is port 443 open on megatron', 'check if port is open', 'what is my IP address', 'is megatron reachable', 'ping host', 'resolve hostname', 'DNS lookup', 'active connections', 'network adapters', 'what is the Tailscale IP', 'what external connections is my app making', 'why can my container not reach the database', 'net_connections', 'net_adapters', 'net_ping', 'net_dns_lookup', 'net_port_check', 'http get', 'http post', 'trigger webhook', 'call api', 'net_http_get', 'net_http_post', 'who owns this domain', 'when does this domain expire', 'domain registration', 'whois', 'nameservers', 'net_whois'. DO NOT USE WHEN: 'run ping.exe or curl.exe' (use grille-process); 'firewall rules or firewall profile' (use grille-firewall); 'network on a remote machine' (use grille-ssh for ssh_run)."
 ---
 
 ## Overview
@@ -129,6 +129,20 @@ grille:net_whois domain="*.getgrille.com"
 → Wildcard stripped automatically — looks up "getgrille.com"
 ```
 
+**Diagnose why a port is closed (firewall correlation):**
+```
+grille:net_port_check host="localhost" port=5432
+→ CLOSED
+
+grille:firewall_rules direction="inbound" port=5432
+→ Check for explicit block rules or missing allow rules
+
+grille:firewall_profile
+→ Default Inbound: Block — all ports closed unless explicitly allowed
+
+→ See grille-firewall skill for full pattern and interpretation
+```
+
 **Diagnose container connectivity:**
 ```
 grille:net_connections filter_process="docker"
@@ -224,5 +238,5 @@ Content-Type: application/json
 - **Hitting authenticated endpoints without a token** — `net_http_get` and `net_http_post` support `Authorization` headers via `{{secret:name}}` refs. Store credentials in Windows Credential Manager; never pass raw tokens in args.
 - **URL not in allowlist** — `net_http_get` and `net_http_post` will deny any URL not matching a `[[roles.<role>.net_allowed_endpoints]]` entry. Add the endpoint to grille.toml first.
 - **Remote machine networking** — these tools only see the local machine. For megatron's connections, use `grille:ssh_run` with `ss` or `netstat`.
-- **Expecting firewall rules** — `net_firewall_list` is Tier 3, not yet implemented.
+- **Expecting firewall rules** — use the `grille-firewall` skill (`firewall_rules`, `firewall_profile`). Pairs naturally with `net_port_check` when a port is CLOSED.
 - **Confusing net_connections with net_port_check** — `net_connections` shows what is currently connected on *this* machine; `net_port_check` actively probes whether a remote host:port is reachable.
