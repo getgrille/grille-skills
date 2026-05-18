@@ -47,13 +47,15 @@ grille:docker_logs
   tail=50
 ```
 
-**Execute a database command inside a container:**
+**Execute a command inside a container:**
 ```
 grille:docker_exec
   container="rekn-postgres"
-  command=["psql", "-U", "postgres", "-c", "SELECT count(*) FROM users;"]
+  command="psql"
+  args=["-U", "postgres", "-c", "SELECT count(*) FROM users;"]
 ```
-Note: only commands in the `docker_exec_allowed` list for that container are permitted.
+Only the executable (`command`) is allowlist-checked. Args are unrestricted — complex
+flags, `-c "..."` expressions, and multi-part arguments all work without any extra config.
 
 **Restart a single service after a config change:**
 ```
@@ -65,7 +67,7 @@ grille:docker_compose_restart
 ## Constraints
 
 - **Do not use `$` characters in passwords passed to Docker Compose.** Docker Compose performs variable interpolation on `$` in `.env` files and inline values. A password like `P@ss$word` will have `$word` expanded (likely to empty string), silently corrupting the credential. Use alphanumeric passwords in all Compose-managed environments.
-- **`docker_exec` is per-container allowlist-gated.** Each container's allowed commands are configured in `grille.toml` under `docker_exec_allowed`. Commands not in the list are denied. Check `grille.toml` or `grille_info` for configured allowlists.
+- **`docker_exec` allowlist covers the executable only.** Each container's permitted executables are configured in `grille.toml` under `docker_exec_allowed`. Args are unrestricted — any flags or `-c "..."` expressions valid for that executable work as-is. Check `grille.toml` or `grille_info` for configured allowlists.
 - **`docker_compose_up` always runs detached.** There is no interactive or attached mode. Log output is accessible via `docker_logs` after startup.
 - **Do not attempt Docker Engine API calls directly.** Grille's Docker module uses the Docker CLI (`docker.exe`) via subprocess. A native Docker Engine API module is deferred pending demand. All current tools are CLI-backed.
 - **`docker_stop` is graceful — it sends SIGTERM and waits.** For containers that are hung and not responding to SIGTERM, use `docker_inspect` first to understand state. Forced kill is not exposed in v1.
@@ -80,7 +82,8 @@ grille:docker_ps
 
 grille:docker_exec
   container="rekn-postgres"
-  command=["pg_isready", "-U", "postgres"]
+  command="pg_isready"
+  args=["-U", "postgres"]
 → "localhost:5432 - accepting connections"
 
 grille:sql_query
