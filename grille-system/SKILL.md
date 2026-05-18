@@ -55,7 +55,7 @@ grille_diagnose()   # no arguments
 
 ## grille_info
 
-Returns version, active role, enabled modules, and total tool count. Lighter than `grille_diagnose` — use when you only need to check what's available, not full machine state.
+Returns version, active role, enabled modules, total tool count, binary path, binary size/mtime, config path/mtime, and a Reliability section (watchdog state, hung-call protection). Lighter than `grille_diagnose` — use when you only need to check what's available, not full machine state.
 
 ```
 grille_info()   # no arguments
@@ -106,13 +106,13 @@ grille_secrets_doctor()   # no arguments
 
 ## grille_reload_config
 
-Applies changes to `grille.toml` without restarting Claude Desktop. Changes to `fs_allowed_paths`, `process_allowed`, `active_role`, and `fs_denied_paths` take effect immediately. Enabling new capability modules still requires a restart.
+Applies changes to `grille.toml` without restarting Claude Desktop. Changes to `fs_allowed_paths`, `process_allowed`, `active_role`, and `fs_denied_paths` take effect immediately. The response now shows the config file's last-modified time so you can confirm the right version was loaded. Enabling new capability modules (new `[[sql_connections]]`, `[[ssh_hosts]]`, `[[secret_providers]]`) still requires a full Claude Desktop restart.
 
 ```
 grille_reload_config()   # no arguments
 ```
 
-**Note:** Returns "no changes detected" even when changes were applied — this is a known cosmetic issue, not a failure.
+**Note:** Returns "no changes detected" even when changes were applied — this is a known cosmetic issue, not a failure. Check the `config last modified` timestamp in the response to confirm the file was read.
 
 ---
 

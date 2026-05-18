@@ -11,7 +11,7 @@ This skill covers `process_run` — Grille's tool for spawning Windows executabl
 
 ## Tools
 
-- `process_run` — Execute an allowlisted Windows executable with arguments. Captures stdout and stderr. 30-second default timeout, 300-second maximum. Output capped at 10 MB.
+- `process_run` — Execute an allowlisted Windows executable with arguments. Captures stdout and stderr. 30-second default timeout, 300-second maximum. Output capped at 10 MB. **Python stdout is automatically decoded as UTF-8** — no `sys.stdout.reconfigure()` needed in inline `-c` scripts.
 
 ## Patterns
 
