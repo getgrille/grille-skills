@@ -45,9 +45,10 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-ssh](./grille-ssh/SKILL.md) | "ssh_run", "ssh_copy", "deploy to server", "run on remote machine", "copy file to remote" | `ssh_run`, `ssh_copy` |
 | [grille-registry](./grille-registry/SKILL.md) | "read registry", "write registry", "HKCU", "HKLM", "registry_read_value" | `registry_read_value`, `registry_list_key`, `registry_set_value`, `registry_delete_value` |
 | [grille-eventlog](./grille-eventlog/SKILL.md) | "event log", "windows events", "check for errors in event log", "Grille security events" | `eventlog_query` |
-| [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait` |
+| [grille-processes](./grille-processes/SKILL.md) | "what's running", "list processes", "kill process", "process tree", "wait for process", "CPU usage", "memory usage", "what spawned this", "snapshot processes", "what changed since snapshot" | `ps_list`, `ps_kill`, `ps_tree`, `ps_wait`, `ps_snapshot`, `ps_diff` |
 | [grille-git](./grille-git/SKILL.md) | "git status", "commit history", "git log", "show diff", "commit changes", "switch branch", "fetch from remote", "stash changes" | `git_status`, `git_log`, `git_diff`, `git_branches`, `git_show`, `git_stash_list`, `git_commit`, `git_checkout`, `git_stash`, `git_stash_pop`, `git_fetch` |
 | [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "is port open", "check if port is open", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "active connections", "network adapters", "is the API up", "check health endpoint", "query REST API on localhost", "trigger webhook", "http post", "call api", "who owns this domain", "when does this domain expire", "domain registration", "whois", "nameservers" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup`, `net_port_check`, `net_http_get`, `net_http_post`, `net_whois` |
+| [grille-firewall](./grille-firewall/SKILL.md) | "firewall rules", "why is port blocked", "list firewall rules", "what's the default inbound policy", "firewall profile", "is Windows Firewall enabled" | `firewall_rules`, `firewall_profile` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
@@ -124,6 +125,7 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `git_stash_pop` | Grille · Git · Stash Pop |
 | `git_remote` | Grille · Git · Remotes |
 | `git_fetch` | Grille · Git · Fetch |
+| `git_remote` | Grille · Git · Remotes |
 | `net_connections` | Grille · Networking · Connections |
 | `net_adapters` | Grille · Networking · Adapters |
 | `net_ping` | Grille · Networking · Ping |
@@ -136,6 +138,8 @@ Every Grille tool exposes a human-readable title in the MCP manifest for display
 | `sys_drives` | Grille · System Info · Drives |
 | `sys_software` | Grille · System Info · Installed Software |
 | `wmi_query` | Grille · WMI · Query |
+| `firewall_rules` | Grille · Firewall · Rules |
+| `firewall_profile` | Grille · Firewall · Profile |
 | `grille_info` | Grille · System · Info |
 | `grille_diagnose` | Grille · System · Diagnose |
 | `grille_health` | Grille · System · Health |
@@ -165,6 +169,8 @@ Grille is the local-machine layer. It handles everything that runs on your Windo
 - **Git** — structured git operations via libgit2: status, log, diff, branches, show, commit, checkout, stash, fetch. 3-12× more token-efficient than `process_run` + `git.exe`.
 - **Networking** — active TCP/UDP connections with PID mapping, network adapters, ICMP ping, DNS lookup, TCP port check, allowlist-gated HTTP GET and POST with secret-ref header support, RDAP/WHOIS domain registration lookup via IANA bootstrap. Native Windows iphlpapi, no elevation required.
 - **System info** — OS display version (via RtlGetVersion), uptime, RAM usage, per-drive disk space, installed software inventory. Native Win32 APIs — no WMI, no subprocess, no elevation.
+- **WMI/CIM** — native COM `IWbemServices` queries with deny-by-default class allowlist. No PowerShell, no WMIC subprocess.
+- **Windows Firewall** — read firewall rules and active profile via `INetFwPolicy2`. No elevation required. Pairs with `net_port_check` for port diagnostics.
 - **Diagnostics** — `grille_diagnose` consolidated health snapshot (server, OS, RAM, drives, session errors, Windows Event Log errors in one call); `grille_info`, `grille_health`, `grille_session_stats`. Always available — no module required.
 
 ---

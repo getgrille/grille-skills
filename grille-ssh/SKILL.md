@@ -1,6 +1,6 @@
 ---
 name: grille-ssh
-description: "Use when running commands or transferring files on remote SSH hosts configured in grille.toml. WHEN: 'ssh_run', 'remote_copy', 'deploy to server', 'run on remote machine', 'copy file to remote', 'check remote machine', 'ssh into server'. DO NOT USE WHEN: managing local Docker (use grille-docker); local file operations (use grille-filesystem)."
+description: "Use when running commands or transferring files on remote SSH hosts configured in grille.toml. WHEN: 'ssh_run', 'ssh_copy', 'deploy to server', 'run on remote machine', 'copy file to remote', 'check remote machine', 'ssh into server'. DO NOT USE WHEN: managing local Docker (use grille-docker); local file operations (use grille-filesystem)."
 ---
 
 ## Overview
