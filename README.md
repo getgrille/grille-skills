@@ -1,6 +1,6 @@
 # grille-skills
 
-**18 skills for every Grille module. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, and Windsurf.**
+**19 skills for every Grille module. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, and Windsurf.**
 
 <!-- mcp-name: io.github.getgrille/grille -->
 
@@ -50,6 +50,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-networking](./grille-networking/SKILL.md) | "what process is holding port", "what's on port 5432", "who has port", "is port open", "check if port is open", "my IP address", "ping host", "is host reachable", "DNS lookup", "resolve hostname", "DNS cache", "why is DNS resolving stale", "active connections", "network adapters", "is the API up", "check health endpoint", "query REST API on localhost", "trigger webhook", "http post", "call api", "who owns this domain", "when does this domain expire", "domain registration", "whois", "nameservers" | `net_connections`, `net_adapters`, `net_ping`, `net_dns_lookup`, `net_port_check`, `net_http_get`, `net_http_post`, `net_whois`, `net_who_has_port`, `net_dns_cache` |
 | [grille-firewall](./grille-firewall/SKILL.md) | "firewall rules", "why is port blocked", "list firewall rules", "what's the default inbound policy", "firewall profile", "is Windows Firewall enabled" | `firewall_rules`, `firewall_profile` |
 | [grille-certs](./grille-certs/SKILL.md) | "is my TLS cert expiring", "check certificate expiry", "find certs expiring soon", "which root CAs are trusted", "is there a rogue CA installed", "cert store", "certificate thumbprint", "certificate SAN" | `cert_store` |
+| [grille-wsl](./grille-wsl/SKILL.md) | "run in WSL", "run in Linux", "run in Ubuntu", "run a Linux command", "wsl_run", "check my WSL environment", "run python in WSL", "run cargo in WSL" | `wsl_run` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
