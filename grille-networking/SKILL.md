@@ -1,11 +1,11 @@
 ---
 name: grille-networking
-description: "Use when diagnosing network state or connectivity on the local Windows machine via Grille, making HTTP requests, or looking up domain registration info. WHEN: 'what process is holding port 8080', 'is port 443 open on megatron', 'check if port is open', 'what is my IP address', 'is megatron reachable', 'ping host', 'resolve hostname', 'DNS lookup', 'active connections', 'network adapters', 'what is the Tailscale IP', 'what external connections is my app making', 'why can my container not reach the database', 'net_connections', 'net_adapters', 'net_ping', 'net_dns_lookup', 'net_port_check', 'http get', 'http post', 'trigger webhook', 'call api', 'net_http_get', 'net_http_post', 'who owns this domain', 'when does this domain expire', 'domain registration', 'whois', 'nameservers', 'net_whois'. DO NOT USE WHEN: 'run ping.exe or curl.exe' (use grille-process); 'firewall rules or firewall profile' (use grille-firewall); 'network on a remote machine' (use grille-ssh for ssh_run)."
+description: "Use when diagnosing network state or connectivity on the local Windows machine via Grille, making HTTP requests, looking up domain registration info, checking port ownership, or reading the local DNS cache. WHEN: 'what process is holding port 8080', 'what's on port 5432', 'who has port 443', 'is port 443 open on megatron', 'check if port is open', 'what is my IP address', 'is megatron reachable', 'ping host', 'resolve hostname', 'DNS lookup', 'active connections', 'network adapters', 'what is the Tailscale IP', 'what external connections is my app making', 'why can my container not reach the database', 'DNS cache', 'why is DNS resolving stale', 'is this hostname cached', 'net_connections', 'net_adapters', 'net_ping', 'net_dns_lookup', 'net_port_check', 'net_who_has_port', 'net_dns_cache', 'http get', 'http post', 'trigger webhook', 'call api', 'net_http_get', 'net_http_post', 'who owns this domain', 'when does this domain expire', 'domain registration', 'whois', 'nameservers', 'net_whois'. DO NOT USE WHEN: 'run ping.exe or curl.exe' (use grille-process); 'firewall rules or firewall profile' (use grille-firewall); 'network on a remote machine' (use grille-ssh for ssh_run); 'certificates or cert store' (use grille-certs)."
 ---
 
 ## Overview
 
-This skill covers Grille's Networking module — Tier 1 read-only diagnostics, Tier 2 HTTP and RDAP, 8 tools total. Tier 1 tools use native Windows APIs (iphlpapi) — no subprocess, no elevation required, structured output. Tier 2 tools use `reqwest` for HTTP and RDAP queries.
+This skill covers Grille's Networking module — Tier 1 read-only diagnostics, Tier 2 HTTP and RDAP, 10 tools total. Tier 1 tools use native Windows APIs (iphlpapi/dnsapi) — no subprocess, no elevation required, structured output. Tier 2 tools use `reqwest` for HTTP and RDAP queries.
 
 Requires `"networking"` in the active role's modules list.
 
@@ -19,6 +19,10 @@ Requires `"networking"` in the active role's modules list.
 - `net_http_get` — HTTP GET to allowlisted endpoints (configured via `net_allowed_endpoints` in grille.toml). Optional request headers with `{{secret:name}}` resolution for credentials. Returns status code, optional response headers, and body (size-capped at 32 KB default, up to 256 KB). Answers: "Is the API returning 200?", "What does this health endpoint return?", "Query this REST endpoint".
 - `net_http_post` — HTTP POST to allowlisted endpoints. Same allowlist model as `net_http_get`. Params: `body` (string), `content_type` (default: `application/json`), optional headers with `{{secret:name}}` resolution. Returns status code and response body. Use for: triggering webhooks, calling REST APIs that require POST, hitting internal action endpoints.
 - `net_whois` — RDAP domain registration lookup via the IANA bootstrap registry. Returns status flags, creation/expiry dates, nameservers, registrar (name + IANA ID + URL), and registrant (or GDPR redaction note). No allowlist required — IANA is hardcoded infrastructure. Answers: "Who owns getgrille.com?", "When does this domain expire?", "What nameservers is it using?", "Is this domain registered?".
+
+- `net_who_has_port` — Which process owns a port. Focused alternative to net_connections for the common "port is already in use" diagnostic. Params: `port` (required), `protocol=tcp|udp|both` (default both). Includes LISTEN bindings. Answers: "What's on port 5432?", "Why can't I bind to port 8080?", "Is Postgres listening?".
+
+- `net_dns_cache` — Local Windows DNS resolver cache via DnsGetCacheDataTable. Answers: "Why is DNS resolving stale IPs?", "Is this hostname cached?". Filter by `filter_name` (substring) or `filter_type` (A/AAAA/CNAME/etc). Requires DNS Client service running.
 
 ## Patterns
 
