@@ -51,6 +51,7 @@ Clone this repo and point your agent's skills path at the root directory. Each s
 | [grille-firewall](./grille-firewall/SKILL.md) | "firewall rules", "why is port blocked", "list firewall rules", "what's the default inbound policy", "firewall profile", "is Windows Firewall enabled" | `firewall_rules`, `firewall_profile` |
 | [grille-certs](./grille-certs/SKILL.md) | "is my TLS cert expiring", "check certificate expiry", "find certs expiring soon", "which root CAs are trusted", "is there a rogue CA installed", "cert store", "certificate thumbprint", "certificate SAN" | `cert_store` |
 | [grille-wsl](./grille-wsl/SKILL.md) | "run in WSL", "run in Linux", "run in Ubuntu", "run a Linux command", "wsl_run", "check my WSL environment", "run python in WSL", "run cargo in WSL" | `wsl_run` |
+| [grille-windows-update](./grille-windows-update/SKILL.md) | "pending Windows updates", "check Windows Update", "is this machine patched", "any security patches", "is KB installed", "patch compliance", "wu_status", "Defender definitions up to date", "missing patches" | `wu_status` |
 | [grille-security](./grille-security/SKILL.md) | "security model", "what can Claude not do", "prompt injection", "audit guarantees", "enterprise evaluation" | Reference skill — no direct tools |
 | [grille-windows-env](./grille-windows-env/SKILL.md) | executable not found, CRLF mismatch, `fs_str_replace` failing, `$` mangling, `grille_reload_config` not working | Cross-cutting — applies to all modules |
 
