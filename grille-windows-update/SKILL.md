@@ -11,6 +11,7 @@ Three modes:
 - **Search mode** (`history=false`, default): calls `IUpdateSearcher::Search()` — returns pending, installed, or all updates. No dates.
 - **History mode** (`history=true`): calls `IUpdateSearcher::QueryHistory()` — returns install/uninstall history with dates and result codes.
 - **Search filter** (`search`): client-side substring filter on title or KB number, works in both modes.
+- **Exclude filter** (`exclude`): client-side substring filter that drops matching titles, applied after `search`. Works in both modes.
 
 ## Tools
 
@@ -23,6 +24,7 @@ Three modes:
 | `status` | No | `"pending"` (default), `"installed"`, or `"all"`. Ignored when `history=true`. |
 | `history` | No | `true` = use QueryHistory, adds install dates and result codes. Default `false`. |
 | `search` | No | Filter by title or KB number. Case-insensitive substring. E.g. `"KB5048685"`, `"Defender"`, `"Cumulative"`. |
+| `exclude` | No | Exclude results whose title contains this substring. Case-insensitive. Applied after `search`. E.g. `"Defender"` to skip definition updates, `"WinAppRuntime"` to skip runtime updates. |
 | `include_hidden` | No | Include hidden/deferred updates. Default `false`. Only applies when `history=false`. |
 | `max_results` | No | Max updates to return. Default 50, max 200. |
 
@@ -64,6 +66,16 @@ grille:wu_status
 grille:wu_status
   search="Defender"
 ```
+
+**Exclude noisy entries from history (recommended default):**
+```
+grille:wu_status
+  history=true
+  exclude="WinAppRuntime"
+```
+When reviewing update history, always pass `exclude="WinAppRuntime"` unless the
+user specifically asks about WinAppRuntime updates — they otherwise flood the
+history with dozens of near-identical runtime entries.
 
 **Large WSUS environment:**
 ```
